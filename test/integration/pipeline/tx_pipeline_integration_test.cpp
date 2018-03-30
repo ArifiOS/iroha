@@ -46,10 +46,7 @@ class TxPipelineIntegrationTest : public TxPipelineIntegrationTestFixture {
             0, {genesis_tx});
 
     manager = std::make_shared<iroha::KeysManagerImpl>("node0");
-    auto old_keypair = manager->loadKeys().value();
-    shared_model::crypto::Keypair keypair(
-        shared_model::crypto::PublicKey(old_keypair.pubkey.to_string()),
-        shared_model::crypto::PrivateKey(old_keypair.privkey.to_string()));
+    auto keypair = manager->loadKeys().value();
 
     irohad = std::make_shared<TestIrohad>(block_store_path,
                                           pgopt_,
@@ -104,10 +101,7 @@ TEST_F(TxPipelineIntegrationTest, TxPipelineTest) {
   iroha::KeysManagerImpl manager("admin@test");
   auto keypair = manager.loadKeys().value();
 
-  shared_model::crypto::Keypair keypair_(
-      shared_model::crypto::PublicKey(keypair.pubkey.to_string()),
-      shared_model::crypto::PrivateKey(keypair.privkey.to_string()));
-  shared_model::crypto::CryptoModelSigner<> signer(keypair_);
+  shared_model::crypto::CryptoModelSigner<> signer(keypair);
   auto transaction = shared_model::proto::from_old(tx);
   signer.sign(transaction);
   tx = *std::unique_ptr<iroha::model::Transaction>(transaction.makeOldModel());
@@ -136,10 +130,7 @@ TEST_F(TxPipelineIntegrationTest, GetTransactionsTest) {
   iroha::KeysManagerImpl manager(CREATOR_ACCOUNT_ID);
   const auto keypair = manager.loadKeys().value();
 
-  shared_model::crypto::Keypair keypair_(
-      shared_model::crypto::PublicKey(keypair.pubkey.to_string()),
-      shared_model::crypto::PrivateKey(keypair.privkey.to_string()));
-  shared_model::crypto::CryptoModelSigner<> signer(keypair_);
+  shared_model::crypto::CryptoModelSigner<> signer(keypair);
   auto given_transaction = shared_model::proto::from_old(given_tx);
   signer.sign(given_transaction);
   given_tx = *std::unique_ptr<iroha::model::Transaction>(given_transaction.makeOldModel());

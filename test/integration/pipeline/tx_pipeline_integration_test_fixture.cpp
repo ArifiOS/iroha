@@ -89,7 +89,7 @@ iroha::keypair_t TxPipelineIntegrationTestFixture::createNewAccountKeypair(
   auto manager = iroha::KeysManagerImpl(accountName);
   EXPECT_TRUE(manager.createKeys());
   EXPECT_TRUE(manager.loadKeys());
-  return *manager.loadKeys();
+  return *std::unique_ptr<iroha::keypair_t>(manager.loadKeys()->makeOldModel());
 }
 
 void TxPipelineIntegrationTestFixture::setTestSubscribers(size_t num_blocks) {

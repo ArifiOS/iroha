@@ -34,7 +34,7 @@ class TransferAssetInterDomainTest : public TxPipelineIntegrationTestFixture {
          + std::to_string(TxPipelineIntegrationTestFixture::default_port)});
     // load admin key pair note: generateGenesisTransaction() creates admin key
     // pair
-    adminKeypair_ = getVal(iroha::KeysManagerImpl(ADMIN_ID).loadKeys());
+    adminKeypair_ = *std::unique_ptr<iroha::keypair_t>(iroha::KeysManagerImpl(ADMIN_ID).loadKeys()->makeOldModel());
 
     // generate and load NBA, Ivan and Tea key pairs
     nbaKeypair_ = createNewAccountKeypair(NBA_ID);
@@ -71,7 +71,7 @@ class TransferAssetInterDomainTest : public TxPipelineIntegrationTestFixture {
 
     // load node0 key pair
     manager = std::make_shared<iroha::KeysManagerImpl>("node0");
-    auto old_keypair = getVal(manager->loadKeys());
+    auto old_keypair = *std::unique_ptr<iroha::keypair_t>(manager->loadKeys()->makeOldModel());
 
     shared_model::crypto::PublicKey publicKey(old_keypair.pubkey.to_string());
     shared_model::crypto::PrivateKey privateKey(
